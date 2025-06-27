@@ -12,7 +12,7 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  //const prodId=req.body.productId;
+  const prodId=req.body.productId;
   const title = req.body.title;
   const price = req.body.price;
   const description = req.body.description;
@@ -22,14 +22,15 @@ exports.postAddProduct = (req, res, next) => {
     title,
     price,
     description,
-    imageUrl
-    //new ObjectId(prodId)
+    imageUrl,
+   // prodId
   );
   product
     .save()
     .then((result) => {
       // console.log(result);
       console.log("Created Product");
+      console.log(result)
       res.redirect("/admin/products");
     })
     .catch((err) => {
@@ -96,15 +97,15 @@ exports.getProducts = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-// exports.postDeleteProduct = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   Product.findById(prodId)
-//     .then(product => {
-//       return product.destroy();
-//     })
-//     .then(result => {
-//       console.log('DESTROYED PRODUCT');
-//       res.redirect('/admin/products');
-//     })
-//     .catch(err => console.log(err));
-// };
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.delete(prodId)
+    .then(product => {
+      return product;
+    })
+    .then(result => {
+      console.log('DESTROYED PRODUCT');
+      res.redirect('/admin/products');
+    })
+    .catch(err => console.log(err));
+};
