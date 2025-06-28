@@ -1,19 +1,11 @@
 const path = require('path');
-const Product = require('./models/product');
-
-  // const newProduct = new Product({
-  //   title: "book",
-  //   price: 90,
-  //   description: 'good book',
-  //   imageUrl: "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg",
-  // }).save();
-
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const errorController = require('./controllers/error');
-const mongoConnect = require('./util/database').mongoConnect;
+const User = require('./models/user');
 
 const app = express();
 
@@ -27,13 +19,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  // User.findById(1)
-  //   .then(user => {
-  //     req.user = user;
-  //     next();
-  //   })
-  //   .catch(err => console.log(err));
-  next();
+  User.findById('685fadc094eb8c3e3a5fe219')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
 });
 
 app.use('/admin', adminRoutes);
@@ -41,6 +32,25 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  app.listen(3000);
-});
+mongoose
+  .connect(
+     "mongodb+srv://ahmed:ahmed-1@cluster0.jo6xr9w.mongodb.net/shop"
+  )
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: 'Max',
+          email: 'max@test.com',
+          cart: {
+            items: []
+          }
+        });
+        user.save();
+      }
+    });
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
